@@ -8,7 +8,6 @@ const { check, validationResult } = require('express-validator');
 
 const User = require('../../models/User');
 
-// const User = require('../.../models/User')
 //@route  POST api/user
 //@desc   Register user
 //@access Public
@@ -55,10 +54,14 @@ router.post(
       });
 
       // encrypt password
-      const salt = await bcrypt.genSalt(10);
-      user.passowrd = await bcrypt.hash(password, salt);
+      // const salt = await bcrypt.genSalt(10);
+      // user.passowrd = await bcrypt.hash(password, salt);
 
-      await user.save();
+      bcrypt.hash(user.password, 10, function (err, hash) {
+        user.password = hash;
+        user.save();
+      });
+      console.log(await user.password);
 
       // return jsonwebtoken
       const payload = {
