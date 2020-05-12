@@ -44,7 +44,7 @@ router.post(
       if (!user) {
         return res
           .status(400)
-          .json({ errors: [{ msg: 'Invalid email' }] });
+          .json({ errors: [{ msg: 'Invalid credentials' }] });
       }
 
       // check if the email and password match the stored user
@@ -53,7 +53,7 @@ router.post(
       if (!isMatch) {
         return res
           .status(400)
-          .json({ errors: [{ msg: user.password }] });
+          .json({ errors: [{ msg: 'Invalid credentials' }] });
       }
 
       // return jsonwebtoken

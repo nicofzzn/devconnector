@@ -61,7 +61,6 @@ router.post(
         user.password = hash;
         user.save();
       });
-      console.log(await user.password);
 
       // return jsonwebtoken
       const payload = {
