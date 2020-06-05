@@ -78,7 +78,7 @@ const ProfileSchema = new mongoose.Schema({
       to: {
         type: Date,
       },
-      school: {
+      current: {
         type: Boolean,
         default: false,
       },
