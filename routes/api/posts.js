@@ -20,9 +20,7 @@ router.post(
     }
 
     try {
-      const user = await User.findById(req.user.id).select(
-        '-password'
-      );
+      const user = await User.findById(req.user.id).select('-password');
 
       const newPost = new Post({
         text: req.body.text,
@@ -41,4 +39,65 @@ router.post(
   }
 );
 
+//@route  Get api/post
+//@desc   Get all post
+//@access private
+router.get('/', auth, async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ date: -1 });
+    res.json(posts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+//@route  Get api/post/:id
+//@desc   Get post by id
+//@access private
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not found' });
+    }
+
+    console.log(req);
+    res.json(post);
+  } catch (err) {
+    console.error(err.message);
+    if (typeof err.kind === 'undefined') {
+      return res.status(404).send({ msg: 'Post not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+//@route  Delete api/post/:id
+//@desc   Delete post by id
+//@access private
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not found' });
+    }
+
+    if (post.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not authorize' });
+    }
+
+    await post.remove();
+
+    res.json({ msg: 'Post removed' });
+  } catch (err) {
+    console.error(err.message);
+    if (typeof err.kind === 'undefined') {
+      return res.status(404).send({ msg: 'Post not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
 module.exports = router;
