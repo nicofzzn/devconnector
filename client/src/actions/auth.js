@@ -7,11 +7,12 @@ import {
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
+  LOGOUT,
 } from './types';
 import setAuthToken from '../utils/setAuthToken';
 
 // Load user
-export const loadUser = () => async (dispatch) => {
+export const loadUser = () => async dispatch => {
   if (localStorage) {
     setAuthToken(localStorage.token);
   }
@@ -31,7 +32,11 @@ export const loadUser = () => async (dispatch) => {
 };
 
 // register user
-export const register = ({ name, email, password }) => async (dispatch) => {
+export const register = ({
+  name,
+  email,
+  password,
+}) => async dispatch => {
   const config = {
     headers: {
       'Conten-Type': 'application/json',
@@ -55,7 +60,9 @@ export const register = ({ name, email, password }) => async (dispatch) => {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach(error =>
+        dispatch(setAlert(error.msg, 'danger'))
+      );
     }
 
     dispatch({
@@ -65,7 +72,7 @@ export const register = ({ name, email, password }) => async (dispatch) => {
 };
 
 // login user
-export const login = (email, password) => async (dispatch) => {
+export const login = (email, password) => async dispatch => {
   const config = {
     headers: {
       'Conten-Type': 'application/json',
@@ -73,7 +80,11 @@ export const login = (email, password) => async (dispatch) => {
   };
 
   try {
-    const res = await axios.post('/api/auth', { email, password }, config);
+    const res = await axios.post(
+      '/api/auth',
+      { email, password },
+      config
+    );
 
     dispatch({
       type: LOGIN_SUCCESS,
@@ -85,11 +96,18 @@ export const login = (email, password) => async (dispatch) => {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach(error =>
+        dispatch(setAlert(error.msg, 'danger'))
+      );
     }
 
     dispatch({
       type: LOGIN_FAIL,
     });
   }
+};
+
+// logout / clear profile
+export const logout = () => dispatch => {
+  dispatch({ type: LOGOUT });
 };
