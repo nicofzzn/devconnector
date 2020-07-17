@@ -18,9 +18,7 @@ router.get('/me', auth, async (req, res) => {
     }).populate('user', ['name', 'avatar']);
 
     if (!profile) {
-      return res
-        .status(400)
-        .json({ msg: 'There is no profile for this user' });
+      return res.status(400).json({ msg: 'There is no profile for this user' });
     }
 
     res.json(profile);
@@ -73,9 +71,7 @@ router.post(
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
     if (skills) {
-      profileFields.skills = skills
-        .split(',')
-        .map(skill => skill.trim());
+      profileFields.skills = skills.split(',').map((skill) => skill.trim());
     }
 
     // initialize profileFields.social object
@@ -117,10 +113,7 @@ router.post(
 //@access Public
 router.get('/', async (req, res) => {
   try {
-    const profiles = await Profile.find().populate('user', [
-      'name',
-      'avatar',
-    ]);
+    const profiles = await Profile.find().populate('user', ['name', 'avatar']);
 
     res.json(profiles);
   } catch (err) {
@@ -156,6 +149,7 @@ router.get('/user/:user_id', async (req, res) => {
 router.delete('/', auth, async (req, res) => {
   try {
     // remove posts
+    await Post.deleteMany({ user: req.user.id });
 
     // remove profile
     await Profile.findOneAndRemove({ user: req.user.id });
@@ -233,7 +227,7 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
 
     //get remove index
     const removeIndex = profile.experience
-      .map(item => item.id)
+      .map((item) => item.id)
       .indexOf(req.params.exp_id);
 
     profile.experience.splice(removeIndex, 1);
@@ -256,9 +250,7 @@ router.put(
     [
       check('school', 'School is required').not().isEmpty(),
       check('degree', 'Degree is required').not().isEmpty(),
-      check('fieldofstudy', 'Field of Study is required')
-        .not()
-        .isEmpty(),
+      check('fieldofstudy', 'Field of Study is required').not().isEmpty(),
       check('from', 'From date is required').not().isEmpty(),
     ],
   ],
@@ -312,7 +304,7 @@ router.delete('/education/:edu_id', auth, async (req, res) => {
 
     //get remove index
     const removeIndex = profile.education
-      .map(item => item.id)
+      .map((item) => item.id)
       .indexOf(req.params.edu_id);
 
     profile.education.splice(removeIndex, 1);
@@ -347,9 +339,7 @@ router.get('/github/:username', (req, res) => {
         response.statusCode !== 200 ||
         typeof response.statusCode === 'undefined'
       ) {
-        return res
-          .status(404)
-          .json({ msg: 'No Github Profile Found!' });
+        return res.status(404).json({ msg: 'No Github Profile Found!' });
       }
 
       res.json(JSON.parse(body));
