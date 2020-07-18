@@ -72,7 +72,11 @@ router.post(
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
     if (skills) {
-      profileFields.skills = skills.split(',').map((skill) => skill.trim());
+      const newSkills = skills.toString();
+      profileFields.skills = newSkills.split(',').map((skill) => skill.trim());
+      profileFields.skills = profileFields.skills.filter(
+        (skill) => skill !== ''
+      );
     }
 
     // initialize profileFields.social object
@@ -82,6 +86,10 @@ router.post(
     if (youtube) profileFields.social.youtube = youtube;
     if (instagram) profileFields.social.instagram = instagram;
     if (linkedin) profileFields.social.linkedin = linkedin;
+
+    // initialize experience and education
+    profileFields.experience = [];
+    profileFields.education = [];
 
     try {
       let profile = await Profile.findOne({ user: req.user.id });
