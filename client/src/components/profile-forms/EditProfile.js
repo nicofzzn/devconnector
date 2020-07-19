@@ -53,7 +53,8 @@ const EditProfile = ({
       instagram:
         loading || !profile.instagram ? '' : profile.instagram,
     });
-  }, [loading]);
+    // eslint-disable-next-line
+  }, [loading, getCurrentProfile]);
 
   const {
     company,
