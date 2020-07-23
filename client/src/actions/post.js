@@ -90,7 +90,8 @@ export const addPost = (formData) => async (dispatch) => {
   };
 
   try {
-    if (formData.text.trim() === '') throw 'Post should not be empty';
+    if (formData.text.trim() === '')
+      throw new Error('Post should not be empty');
 
     const res = await axios.post(`/api/posts`, formData, config);
 
@@ -101,7 +102,7 @@ export const addPost = (formData) => async (dispatch) => {
 
     dispatch(setAlert('Post Created', 'success'));
   } catch (err) {
-    typeof err === 'string'
+    err.message
       ? dispatch(setAlert('Post should not be empty', 'danger'))
       : dispatch({
           type: POST_ERROR,
@@ -139,7 +140,8 @@ export const addComment = (postId, formData) => async (dispatch) => {
   };
 
   try {
-    if (formData.text.trim() === '') throw 'Post should not be empty';
+    if (formData.text.trim() === '')
+      throw new Error('Comment should not be empty');
 
     const res = await axios.post(
       `/api/posts/comment/${postId}`,
@@ -154,7 +156,7 @@ export const addComment = (postId, formData) => async (dispatch) => {
 
     dispatch(setAlert('Comment Added', 'success'));
   } catch (err) {
-    typeof err === 'string'
+    err.message
       ? dispatch(setAlert('Comment should not be empty', 'danger'))
       : dispatch({
           type: POST_ERROR,
@@ -169,14 +171,14 @@ export const addComment = (postId, formData) => async (dispatch) => {
 // delete comment
 export const deleteComment = (postId, commentId) => async (dispatch) => {
   try {
-    const res = await axios.delete(`/api/posts/comment/${postId}`);
+    await axios.delete(`/api/posts/comment/${postId}/${commentId}`);
 
     dispatch({
       type: REMOVE_COMMENT,
       payload: commentId,
     });
 
-    dispatch(setAlert('Comment Added', 'success'));
+    dispatch(setAlert('Comment Deleted', 'success'));
   } catch (err) {
     dispatch({
       type: POST_ERROR,
