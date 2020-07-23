@@ -2,6 +2,7 @@ import axios from 'axios';
 import { setAlert } from './alert';
 import {
   GET_POSTS,
+  GET_POST,
   POST_ERROR,
   UPDATE_LIKES,
   DELETE_POST,
@@ -9,7 +10,7 @@ import {
 } from './types';
 
 // get post
-export const getPost = () => async (dispatch) => {
+export const getPosts = () => async (dispatch) => {
   try {
     const res = await axios.get('/api/posts');
 
@@ -87,6 +88,8 @@ export const addPost = (formData) => async (dispatch) => {
   };
 
   try {
+    if (formData.text.trim() === '') throw 'Post should not be empty';
+
     const res = await axios.post(`/api/posts`, formData, config);
 
     dispatch({
@@ -95,6 +98,28 @@ export const addPost = (formData) => async (dispatch) => {
     });
 
     dispatch(setAlert('Post Created', 'success'));
+  } catch (err) {
+    typeof err === 'string'
+      ? dispatch(setAlert('Post should not be empty', 'danger'))
+      : dispatch({
+          type: POST_ERROR,
+          payload: {
+            msg: err.response.statusText,
+            status: err.response.status,
+          },
+        });
+  }
+};
+
+// get post
+export const getPost = (postId) => async (dispatch) => {
+  try {
+    const res = await axios.get(`/api/posts/${postId}`);
+
+    dispatch({
+      type: GET_POST,
+      payload: res.data,
+    });
   } catch (err) {
     dispatch({
       type: POST_ERROR,
